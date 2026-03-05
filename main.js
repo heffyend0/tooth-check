@@ -62,9 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const resAlignment = document.querySelector('#result-alignment .status-badge');
   const overallFeedback = document.getElementById('overall-feedback');
 
-  // User data store
-  let userData = {};
-
   // Modal logic
   const modalLinks = document.querySelectorAll('.btn-text-link');
   const closeButtons = document.querySelectorAll('.modal-close');

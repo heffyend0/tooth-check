@@ -52,7 +52,7 @@ body::before {
 
 .app-container {
   width: 100%;
-  max-width: 440px;
+  max-width: 540px;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -267,10 +267,11 @@ h2 {
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--text-main);
+  letter-spacing: -0.3px;
 }
 
 .checkbox-label input[type="checkbox"] {
