@@ -66,6 +66,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  // Dev skip logic
+  const btnDevSkip = document.getElementById('btn-dev-skip');
+  if (btnDevSkip) {
+    btnDevSkip.addEventListener('click', () => {
+      userData = { name: "개발자", phone: "010-0000-0000", region: "서울" };
+      showSection(inputSection);
+    });
+  }
+
   // Camera functions
   async function startCamera() {
     stopCamera(); // Ensure previous stream is stopped before starting a new one
@@ -74,8 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { 
             facingMode: useFrontCamera ? 'user' : 'environment',
-            width: { ideal: 4096, min: 1920 },
-            height: { ideal: 2160, min: 1080 }
+            width: { ideal: 1920, max: 2560 },  // Lower ideal to 1080p for performance, max 1440p
+            height: { ideal: 1080, max: 1440 },
+            frameRate: { ideal: 30, max: 60 } // Request higher framerate for smoother UI
           },
           audio: false
         });
