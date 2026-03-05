@@ -68,6 +68,16 @@ document.addEventListener('DOMContentLoaded', () => {
   infoForm.addEventListener('submit', (e) => {
     e.preventDefault();
     
+    const agreeTerms = document.getElementById('agree-terms').checked;
+    const agreeSensitive = document.getElementById('agree-sensitive').checked;
+    const agreePrivacy = document.getElementById('agree-privacy').checked;
+    const agreeMarketing = document.getElementById('agree-marketing').checked;
+
+    if (!agreeTerms || !agreeSensitive || !agreePrivacy || !agreeMarketing) {
+      alert("모든 필수 동의 항목에 체크해야 다음 단계로 진행할 수 있습니다.");
+      return;
+    }
+
     // Save user data (for later DB use)
     userData = {
       name: document.getElementById('user-name').value,
