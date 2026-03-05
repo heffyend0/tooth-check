@@ -30,6 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('step-3-dot')
   ];
 
+  // Results elements
+  const resCavity = document.querySelector('#result-cavity .status-badge');
+  const resTartar = document.querySelector('#result-tartar .status-badge');
+  const resAlignment = document.querySelector('#result-alignment .status-badge');
+  const overallFeedback = document.getElementById('overall-feedback');
+
   // Camera stream track
   let currentStream = null;
   let useFrontCamera = true; // Default to front camera
