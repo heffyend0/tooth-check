@@ -15,8 +15,55 @@
     </header>
 
     <main class="app-main">
+      <!-- Info Section -->
+      <section id="info-section" class="card fade-in active">
+        <div class="icon-container">
+          <svg class="camera-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <h2>기본 정보 입력</h2>
+        <p class="description">정확한 분석을 위해 기본 정보를 입력해주세요.</p>
+        
+        <form id="info-form" class="info-form">
+          <div class="form-group">
+            <label for="user-name">이름</label>
+            <input type="text" id="user-name" placeholder="홍길동" required>
+          </div>
+          <div class="form-group">
+            <label for="user-phone">전화번호</label>
+            <input type="tel" id="user-phone" placeholder="010-0000-0000" required>
+          </div>
+          <div class="form-group">
+            <label for="user-region">거주 지역</label>
+            <select id="user-region" required>
+              <option value="" disabled selected>지역을 선택해주세요</option>
+              <option value="서울">서울특별시</option>
+              <option value="부산">부산광역시</option>
+              <option value="대구">대구광역시</option>
+              <option value="인천">인천광역시</option>
+              <option value="광주">광주광역시</option>
+              <option value="대전">대전광역시</option>
+              <option value="울산">울산광역시</option>
+              <option value="세종">세종특별자치시</option>
+              <option value="경기">경기도</option>
+              <option value="강원">강원도</option>
+              <option value="충북">충청북도</option>
+              <option value="충남">충청남도</option>
+              <option value="전북">전라북도</option>
+              <option value="전남">전라남도</option>
+              <option value="경북">경상북도</option>
+              <option value="경남">경상남도</option>
+              <option value="제주">제주특별자치도</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary">다음 단계로</button>
+        </form>
+      </section>
+
       <!-- Input Section -->
-      <section id="input-section" class="card fade-in active">
+      <section id="input-section" class="card hidden">
         <div class="icon-container">
           <svg class="camera-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>

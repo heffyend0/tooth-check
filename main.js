@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const infoSection = document.getElementById('info-section');
+  const infoForm = document.getElementById('info-form');
   const imageInput = document.getElementById('image-input');
   const inputSection = document.getElementById('input-section');
   const analysisSection = document.getElementById('analysis-section');
@@ -12,9 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const resAlignment = document.querySelector('#result-alignment .status-badge');
   const overallFeedback = document.getElementById('overall-feedback');
 
+  // User data store
+  let userData = {};
+
   function showSection(sectionToShow) {
     // Hide all sections first
-    const sections = [inputSection, analysisSection, resultSection];
+    const sections = [infoSection, inputSection, analysisSection, resultSection];
     
     sections.forEach(sec => {
       if (sec !== sectionToShow) {
@@ -32,6 +37,21 @@ document.addEventListener('DOMContentLoaded', () => {
       sectionToShow.classList.add('active');
     }, 50);
   }
+
+  // Handle Info Form Submit
+  infoForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    // Save user data (for later DB use)
+    userData = {
+      name: document.getElementById('user-name').value,
+      phone: document.getElementById('user-phone').value,
+      region: document.getElementById('user-region').value
+    };
+    
+    // Move to photo upload section
+    showSection(inputSection);
+  });
 
   imageInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
@@ -74,14 +94,15 @@ document.addEventListener('DOMContentLoaded', () => {
     resAlignment.className = 'status-badge badge-success';
 
     if (hasCavity || hasTartar) {
-      overallFeedback.innerHTML = `분석 결과, <b>${hasCavity ? '초기 충치 의심 부위' : ''}${hasCavity && hasTartar ? '와 ' : ''}${hasTartar ? '치석' : ''}이 발견</b>되었습니다. 스케일링 및 정확한 진단을 위해 가까운 치과 방문을 권장드립니다.`;
+      overallFeedback.innerHTML = `${userData.name || '고객'}님, 분석 결과 <b>${hasCavity ? '초기 충치 의심 부위' : ''}${hasCavity && hasTartar ? '와 ' : ''}${hasTartar ? '치석' : ''}이 발견</b>되었습니다. 스케일링 및 정확한 진단을 위해 가까운 치과 방문을 권장드립니다.`;
     } else {
-      overallFeedback.innerHTML = `놀랍습니다! 전반적으로 <b>치아 관리가 매우 훌륭하게</b> 이루어지고 있습니다. 현재의 올바른 양치 습관을 계속 유지해주세요.`;
+      overallFeedback.innerHTML = `놀랍습니다 ${userData.name || '고객'}님! 전반적으로 <b>치아 관리가 매우 훌륭하게</b> 이루어지고 있습니다. 현재의 올바른 양치 습관을 계속 유지해주세요.`;
     }
   }
 
   btnRetry.addEventListener('click', () => {
     imageInput.value = '';
+    // Go back to input section (or infoSection if you want them to re-enter data)
     showSection(inputSection);
   });
 });
