@@ -74,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { 
             facingMode: useFrontCamera ? 'user' : 'environment',
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
+            width: { ideal: 4096, min: 1920 },
+            height: { ideal: 2160, min: 1080 }
           },
           audio: false
         });
