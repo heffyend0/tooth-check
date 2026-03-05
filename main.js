@@ -5,10 +5,58 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputSection = document.getElementById('input-section');
   const analysisSection = document.getElementById('analysis-section');
   const resultSection = document.getElementById('result-section');
-  const imagePreview = document.getElementById('image-preview');
+  const imagePreview = document.getElementById('image-preview'); // Final analysis preview
   const btnRetry = document.getElementById('btn-retry');
 
-  // Results elements
+  // Step Elements
+  const stepPreview = document.getElementById('step-preview');
+  const guideOverlay = document.getElementById('guide-overlay');
+  const guidePath = document.getElementById('guide-path');
+  const captureTitle = document.getElementById('capture-title');
+  const captureDesc = document.getElementById('capture-desc');
+  const captureBtnText = document.getElementById('capture-btn-text');
+  const captureBtnLabel = document.getElementById('capture-btn-label');
+  const btnNextStep = document.getElementById('btn-next-step');
+  const btnRetake = document.getElementById('btn-retake');
+  const stepDots = [
+    document.getElementById('step-1-dot'),
+    document.getElementById('step-2-dot'),
+    document.getElementById('step-3-dot')
+  ];
+
+  // User data store
+  let userData = {};
+  
+  // Capture Process State
+  let currentStep = 1;
+  const capturedImages = {
+    step1: null, // Front
+    step2: null, // Upper
+    step3: null  // Lower
+  };
+
+  const stepConfig = {
+    1: {
+      title: "정면 사진 촬영",
+      desc: "어금니를 가볍게 물고 입술을 벌려 치아 정면이 잘 보이게 찍어주세요.",
+      btnText: "정면 사진 찍기",
+      guidePath: "M 10,50 Q 50,10 90,50 Q 50,90 10,50 Z" // Smile shape
+    },
+    2: {
+      title: "상악(위쪽) 아치 촬영",
+      desc: "입을 크게 벌리고 고개를 뒤로 젖혀 위쪽 치아 전체가 보이게 찍어주세요.",
+      btnText: "위쪽 치아 찍기",
+      guidePath: "M 20,80 Q 50,10 80,80" // U-shape opening downwards
+    },
+    3: {
+      title: "하악(아래쪽) 아치 촬영",
+      desc: "입을 크게 벌리고 고개를 숙여 아래쪽 치아 전체가 보이게 찍어주세요.",
+      btnText: "아래쪽 치아 찍기",
+      guidePath: "M 20,20 Q 50,90 80,20" // U-shape opening upwards
+    }
+  };
+
+  // Modal logic
   const resCavity = document.querySelector('#result-cavity .status-badge');
   const resTartar = document.querySelector('#result-tartar .status-badge');
   const resAlignment = document.querySelector('#result-alignment .status-badge');
@@ -94,10 +142,73 @@ document.addEventListener('DOMContentLoaded', () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        imagePreview.src = event.target.result;
-        startAnalysis();
+        // Show preview, hide guide
+        stepPreview.src = event.target.result;
+        stepPreview.classList.remove('hidden');
+        guideOverlay.style.display = 'none';
+        
+        // Save image to current step
+        capturedImages[`step${currentStep}`] = event.target.result;
+
+        // Switch buttons
+        captureBtnLabel.classList.add('hidden');
+        btnNextStep.classList.remove('hidden');
+        btnRetake.classList.remove('hidden');
       };
       reader.readAsDataURL(file);
+    }
+  });
+
+  btnRetake.addEventListener('click', () => {
+    imageInput.value = '';
+    capturedImages[`step${currentStep}`] = null;
+    
+    // Reset UI for current step
+    stepPreview.classList.add('hidden');
+    stepPreview.src = '';
+    guideOverlay.style.display = 'block';
+    
+    captureBtnLabel.classList.remove('hidden');
+    btnNextStep.classList.add('hidden');
+    btnRetake.classList.add('hidden');
+  });
+
+  btnNextStep.addEventListener('click', () => {
+    if (currentStep < 3) {
+      // Move to next step
+      stepDots[currentStep - 1].classList.remove('active');
+      stepDots[currentStep - 1].classList.add('completed');
+      
+      currentStep++;
+      
+      stepDots[currentStep - 1].classList.add('active');
+      
+      // Update UI texts and guide
+      const config = stepConfig[currentStep];
+      captureTitle.textContent = config.title;
+      captureDesc.textContent = config.desc;
+      captureBtnText.textContent = config.btnText;
+      guidePath.setAttribute('d', config.guidePath);
+      
+      // Reset input UI for new capture
+      imageInput.value = '';
+      stepPreview.classList.add('hidden');
+      stepPreview.src = '';
+      guideOverlay.style.display = 'block';
+      
+      captureBtnLabel.classList.remove('hidden');
+      btnNextStep.classList.add('hidden');
+      btnRetake.classList.add('hidden');
+      
+      // Change next button text on last step
+      if (currentStep === 3) {
+        btnNextStep.textContent = "AI 분석 시작하기";
+      }
+    } else {
+      // All 3 steps done, start analysis
+      // Use the front image (step 1) for the scanning animation as representation
+      imagePreview.src = capturedImages.step1; 
+      startAnalysis();
     }
   });
 
@@ -137,8 +248,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   btnRetry.addEventListener('click', () => {
+    // Reset process
+    currentStep = 1;
+    capturedImages.step1 = null;
+    capturedImages.step2 = null;
+    capturedImages.step3 = null;
+    
+    stepDots.forEach((dot, index) => {
+      dot.className = 'progress-step';
+      if (index === 0) dot.classList.add('active');
+    });
+
+    const config = stepConfig[1];
+    captureTitle.textContent = config.title;
+    captureDesc.textContent = config.desc;
+    captureBtnText.textContent = config.btnText;
+    guidePath.setAttribute('d', config.guidePath);
+
     imageInput.value = '';
-    // Go back to input section (or infoSection if you want them to re-enter data)
+    stepPreview.classList.add('hidden');
+    stepPreview.src = '';
+    guideOverlay.style.display = 'block';
+    
+    captureBtnLabel.classList.remove('hidden');
+    btnNextStep.classList.add('hidden');
+    btnNextStep.textContent = "다음 단계로";
+    btnRetake.classList.add('hidden');
+
     showSection(inputSection);
   });
 });

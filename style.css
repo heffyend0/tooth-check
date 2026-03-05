@@ -426,6 +426,96 @@ h2 {
   background: #e2e8f0;
 }
 
+/* Camera Guide & Progress */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  gap: 12px;
+}
+
+.progress-step {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--bg-color);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  border: 2px solid rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.progress-step.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+.progress-step.completed {
+  background: var(--success);
+  color: white;
+  border-color: var(--success);
+}
+
+.progress-line {
+  height: 2px;
+  width: 40px;
+  background: rgba(0,0,0,0.1);
+}
+
+.camera-guide-container {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  background: #1e293b;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.guide-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+#step-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+#step-preview.hidden {
+  display: none;
+}
+
+.camera-icon-small {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.capture-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 /* Scanner Image Preview */
 .image-preview-container {
   position: relative;
