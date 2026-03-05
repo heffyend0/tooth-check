@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const captureBtnText = document.getElementById('capture-btn-text');
   
   const btnCapture = document.getElementById('btn-capture');
+  const btnSwitchCamera = document.getElementById('btn-switch-camera');
   const fallbackUploadLabel = document.getElementById('fallback-upload-label');
   
   const btnNextStep = document.getElementById('btn-next-step');
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Camera stream track
   let currentStream = null;
+  let useFrontCamera = true; // Default to front camera
 
   // User data store
   let userData = {};
@@ -66,14 +68,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Camera functions
   async function startCamera() {
+    stopCamera(); // Ensure previous stream is stopped before starting a new one
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' }, // Try to use back camera
+          video: { 
+            facingMode: useFrontCamera ? 'user' : 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
           audio: false
         });
         currentStream = stream;
         cameraStream.srcObject = stream;
+        
+        // Mirror the video if it's the front camera for a natural feel
+        if (useFrontCamera) {
+          cameraStream.style.transform = 'scaleX(-1)';
+        } else {
+          cameraStream.style.transform = 'scaleX(1)';
+        }
+        
         fallbackUploadLabel.classList.add('hidden'); // Hide fallback if camera works
       } catch (err) {
         console.error("Camera access denied or not available:", err);
@@ -82,6 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       fallbackUploadLabel.classList.remove('hidden');
     }
+  }
+
+  // Handle camera switch
+  if (btnSwitchCamera) {
+    btnSwitchCamera.addEventListener('click', () => {
+      useFrontCamera = !useFrontCamera;
+      startCamera();
+    });
   }
 
   function stopCamera() {
