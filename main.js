@@ -32,6 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Camera stream track
   let currentStream = null;
 
+  // User data store
+  let userData = {};
+
   // Capture Process State
   let currentStep = 1;
   const capturedImages = {
