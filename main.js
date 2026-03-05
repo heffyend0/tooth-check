@@ -9,13 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnRetry = document.getElementById('btn-retry');
 
   // Step Elements
+  const cameraStream = document.getElementById('camera-stream');
+  const cameraCanvas = document.getElementById('camera-canvas');
   const stepPreview = document.getElementById('step-preview');
   const guideOverlay = document.getElementById('guide-overlay');
   const guidePath = document.getElementById('guide-path');
   const captureTitle = document.getElementById('capture-title');
   const captureDesc = document.getElementById('capture-desc');
   const captureBtnText = document.getElementById('capture-btn-text');
-  const captureBtnLabel = document.getElementById('capture-btn-label');
+  
+  const btnCapture = document.getElementById('btn-capture');
+  const fallbackUploadLabel = document.getElementById('fallback-upload-label');
+  
   const btnNextStep = document.getElementById('btn-next-step');
   const btnRetake = document.getElementById('btn-retake');
   const stepDots = [
@@ -24,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('step-3-dot')
   ];
 
-  // User data store
-  let userData = {};
-  
+  // Camera stream track
+  let currentStream = null;
+
   // Capture Process State
   let currentStep = 1;
   const capturedImages = {
@@ -56,38 +61,81 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Modal logic
-  const resCavity = document.querySelector('#result-cavity .status-badge');
-  const resTartar = document.querySelector('#result-tartar .status-badge');
-  const resAlignment = document.querySelector('#result-alignment .status-badge');
-  const overallFeedback = document.getElementById('overall-feedback');
-
-  // Modal logic
-  const modalLinks = document.querySelectorAll('.btn-text-link');
-  const closeButtons = document.querySelectorAll('.modal-close');
-  const overlays = document.querySelectorAll('.modal-overlay');
-
-  modalLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      const targetId = e.target.getAttribute('data-modal');
-      document.getElementById(targetId).classList.add('active');
-    });
-  });
-
-  closeButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.target.closest('.modal-overlay').classList.remove('active');
-    });
-  });
-
-  overlays.forEach(overlay => {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) {
-        overlay.classList.remove('active');
+  // Camera functions
+  async function startCamera() {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }, // Try to use back camera
+          audio: false
+        });
+        currentStream = stream;
+        cameraStream.srcObject = stream;
+        fallbackUploadLabel.classList.add('hidden'); // Hide fallback if camera works
+      } catch (err) {
+        console.error("Camera access denied or not available:", err);
+        fallbackUploadLabel.classList.remove('hidden'); // Show fallback input
       }
-    });
+    } else {
+      fallbackUploadLabel.classList.remove('hidden');
+    }
+  }
+
+  function stopCamera() {
+    if (currentStream) {
+      currentStream.getTracks().forEach(track => track.stop());
+      currentStream = null;
+    }
+  }
+
+  // Handle capture from live camera
+  btnCapture.addEventListener('click', () => {
+    if (currentStream) {
+      // Set canvas size to match video feed
+      cameraCanvas.width = cameraStream.videoWidth;
+      cameraCanvas.height = cameraStream.videoHeight;
+      const ctx = cameraCanvas.getContext('2d');
+      // Draw current video frame onto canvas
+      ctx.drawImage(cameraStream, 0, 0, cameraCanvas.width, cameraCanvas.height);
+      
+      // Convert to image data URL
+      const imageData = cameraCanvas.toDataURL('image/jpeg', 0.8);
+      processCapturedImage(imageData);
+    } else {
+      alert("카메라가 활성화되지 않았습니다. 권한을 확인하거나 앨범에서 선택해주세요.");
+    }
   });
 
+  // Handle fallback file upload
+  imageInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        processCapturedImage(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  function processCapturedImage(imageDataUrl) {
+    // Show preview, hide guide and camera feed
+    stepPreview.src = imageDataUrl;
+    stepPreview.classList.remove('hidden');
+    guideOverlay.style.display = 'none';
+    cameraStream.style.display = 'none';
+    
+    // Save image to current step
+    capturedImages[`step${currentStep}`] = imageDataUrl;
+
+    // Switch buttons
+    btnCapture.classList.add('hidden');
+    fallbackUploadLabel.classList.add('hidden');
+    btnNextStep.classList.remove('hidden');
+    btnRetake.classList.remove('hidden');
+  }
+
+  // Handle section switching and camera state
   function showSection(sectionToShow) {
     // Hide all sections first
     const sections = [infoSection, inputSection, analysisSection, resultSection];
@@ -97,13 +145,19 @@ document.addEventListener('DOMContentLoaded', () => {
         sec.classList.remove('active');
         setTimeout(() => {
           sec.classList.add('hidden');
-        }, 500); // match CSS transition duration
+        }, 500);
       }
     });
 
+    // Start/Stop camera based on section
+    if (sectionToShow === inputSection) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+
     // Show target section
     sectionToShow.classList.remove('hidden');
-    // small delay to allow display block to apply before animating opacity
     setTimeout(() => {
       sectionToShow.classList.add('active');
     }, 50);
@@ -134,40 +188,24 @@ document.addEventListener('DOMContentLoaded', () => {
     showSection(inputSection);
   });
 
-  imageInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        // Show preview, hide guide
-        stepPreview.src = event.target.result;
-        stepPreview.classList.remove('hidden');
-        guideOverlay.style.display = 'none';
-        
-        // Save image to current step
-        capturedImages[`step${currentStep}`] = event.target.result;
-
-        // Switch buttons
-        captureBtnLabel.classList.add('hidden');
-        btnNextStep.classList.remove('hidden');
-        btnRetake.classList.remove('hidden');
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
   btnRetake.addEventListener('click', () => {
-    imageInput.value = '';
     capturedImages[`step${currentStep}`] = null;
     
     // Reset UI for current step
     stepPreview.classList.add('hidden');
     stepPreview.src = '';
     guideOverlay.style.display = 'block';
+    cameraStream.style.display = 'block';
     
-    captureBtnLabel.classList.remove('hidden');
+    btnCapture.classList.remove('hidden');
+    fallbackUploadLabel.classList.add('hidden'); // Hide fallback unless camera fails
     btnNextStep.classList.add('hidden');
     btnRetake.classList.add('hidden');
+    
+    // Ensure camera is running
+    if (!currentStream) {
+      startCamera();
+    }
   });
 
   btnNextStep.addEventListener('click', () => {
@@ -187,13 +225,14 @@ document.addEventListener('DOMContentLoaded', () => {
       captureBtnText.textContent = config.btnText;
       guidePath.setAttribute('d', config.guidePath);
       
-      // Reset input UI for new capture
-      imageInput.value = '';
+      // Reset UI for new capture
       stepPreview.classList.add('hidden');
       stepPreview.src = '';
       guideOverlay.style.display = 'block';
+      cameraStream.style.display = 'block';
       
-      captureBtnLabel.classList.remove('hidden');
+      btnCapture.classList.remove('hidden');
+      fallbackUploadLabel.classList.add('hidden');
       btnNextStep.classList.add('hidden');
       btnRetake.classList.add('hidden');
       
@@ -201,8 +240,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (currentStep === 3) {
         btnNextStep.textContent = "AI 분석 시작하기";
       }
+      
+      // Ensure camera is running
+      if (!currentStream) {
+        startCamera();
+      }
     } else {
-      // All 3 steps done, start analysis
+      // All 3 steps done, stop camera and start analysis
+      stopCamera();
       // Use the front image (step 1) for the scanning animation as representation
       imagePreview.src = capturedImages.step1; 
       startAnalysis();
@@ -262,12 +307,13 @@ document.addEventListener('DOMContentLoaded', () => {
     captureBtnText.textContent = config.btnText;
     guidePath.setAttribute('d', config.guidePath);
 
-    imageInput.value = '';
     stepPreview.classList.add('hidden');
     stepPreview.src = '';
     guideOverlay.style.display = 'block';
+    cameraStream.style.display = 'block';
     
-    captureBtnLabel.classList.remove('hidden');
+    btnCapture.classList.remove('hidden');
+    fallbackUploadLabel.classList.add('hidden');
     btnNextStep.classList.add('hidden');
     btnNextStep.textContent = "다음 단계로";
     btnRetake.classList.add('hidden');

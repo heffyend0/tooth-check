@@ -484,6 +484,13 @@ h2 {
   box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
 }
 
+#camera-stream {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
 .guide-overlay {
   position: absolute;
   top: 0;
@@ -495,13 +502,20 @@ h2 {
 }
 
 #step-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: 1;
+  z-index: 3;
 }
 
 #step-preview.hidden {
+  display: none;
+}
+
+#camera-canvas {
   display: none;
 }
 
