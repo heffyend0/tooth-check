@@ -17,6 +17,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // User data store
   let userData = {};
 
+  // Modal logic
+  const modalLinks = document.querySelectorAll('.btn-text-link');
+  const closeButtons = document.querySelectorAll('.modal-close');
+  const overlays = document.querySelectorAll('.modal-overlay');
+
+  modalLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetId = e.target.getAttribute('data-modal');
+      document.getElementById(targetId).classList.add('active');
+    });
+  });
+
+  closeButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.target.closest('.modal-overlay').classList.remove('active');
+    });
+  });
+
+  overlays.forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.classList.remove('active');
+      }
+    });
+  });
+
   function showSection(sectionToShow) {
     // Hide all sections first
     const sections = [infoSection, inputSection, analysisSection, resultSection];
