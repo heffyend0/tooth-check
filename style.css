@@ -473,7 +473,7 @@ h2 {
 .camera-guide-container {
   position: relative;
   width: 100%;
-  height: 260px;
+  height: 480px; /* Increased from 260px for better aspect ratio */
   background: #1e293b;
   border-radius: var(--radius-md);
   overflow: hidden;

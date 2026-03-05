@@ -137,11 +137,21 @@ document.addEventListener('DOMContentLoaded', () => {
       cameraCanvas.width = cameraStream.videoWidth;
       cameraCanvas.height = cameraStream.videoHeight;
       const ctx = cameraCanvas.getContext('2d');
+      
+      // Mirror the canvas capture if using front camera to match live preview
+      if (useFrontCamera) {
+        ctx.translate(cameraCanvas.width, 0);
+        ctx.scale(-1, 1);
+      }
+      
       // Draw current video frame onto canvas
       ctx.drawImage(cameraStream, 0, 0, cameraCanvas.width, cameraCanvas.height);
       
-      // Convert to image data URL
-      const imageData = cameraCanvas.toDataURL('image/jpeg', 0.8);
+      // Reset transform for future operations
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      
+      // Convert to image data URL with higher quality (0.95)
+      const imageData = cameraCanvas.toDataURL('image/jpeg', 0.95);
       processCapturedImage(imageData);
     } else {
       alert("카메라가 활성화되지 않았습니다. 권한을 확인하거나 앨범에서 선택해주세요.");
@@ -161,6 +171,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function processCapturedImage(imageDataUrl) {
+    // Mirror preview if front camera is used to match live feed
+    if (useFrontCamera) {
+      stepPreview.style.transform = 'scaleX(-1)';
+    } else {
+      stepPreview.style.transform = 'scaleX(1)';
+    }
+
     // Show preview, hide guide and camera feed
     stepPreview.src = imageDataUrl;
     stepPreview.classList.remove('hidden');
