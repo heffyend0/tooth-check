@@ -23,7 +23,9 @@
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </div>
-        <h2>기본 정보 입력</h2>
+        <h2>기본 정보 입력 
+          <button type="button" id="btn-dev-skip" style="float:right; background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:12px; cursor:pointer;">[DEV] 스킵</button>
+        </h2>
         <p class="description">정확한 분석을 위해 기본 정보를 입력해주세요.</p>
         
         <form id="info-form" class="info-form">
@@ -59,8 +61,6 @@
             </select>
           </div>
           <div class="agreement-section">
-            <!-- dev skip -->
-            <button type="button" id="btn-dev-skip" style="position:absolute; top:10px; right:10px; background:#f00; color:#fff; border:none; padding:5px; border-radius:5px; z-index:100; font-size:12px; opacity:0.5;">[DEV] 스킵</button>
             <div class="agreement-item">
               <label class="checkbox-label">
                 <input type="checkbox" id="agree-terms">

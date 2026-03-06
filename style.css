@@ -247,6 +247,7 @@ h2 {
 
 /* Agreement Section */
 .agreement-section {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 12px;
