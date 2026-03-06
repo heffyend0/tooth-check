@@ -54,8 +54,19 @@ document.addEventListener('DOMContentLoaded', () => {
       title: "정면 사진 촬영",
       desc: "어금니를 가볍게 물고 입술을 벌려 치아 정면이 잘 보이게 찍어주세요.",
       btnText: "정면 사진 찍기",
-      // Detailed silhouette from central incisors to premolars
-      guidePath: "M 15,45 C 15,35 25,25 50,25 C 75,25 85,35 85,45 L 85,55 C 85,65 75,75 50,75 C 25,75 15,65 15,55 Z M 50,25 L 50,75 M 38,26 L 38,74 M 62,26 L 62,74 M 28,30 L 28,70 M 72,30 L 72,70"
+      // Realistic representation of upper and lower teeth biting together (central incisors to premolars)
+      guidePath: `
+        M 10,50 
+        C 10,20 90,20 90,50 
+        C 90,80 10,80 10,50 Z 
+        M 10,50 L 90,50 
+        M 50,23 L 50,77 
+        M 38,24 L 38,76 
+        M 62,24 L 62,76 
+        M 26,27 L 26,73 
+        M 74,27 L 74,73 
+        M 16,35 L 16,65 
+        M 84,35 L 84,65`
     },
     2: {
       title: "상악(위쪽) 아치 촬영",

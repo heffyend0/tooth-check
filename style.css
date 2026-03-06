@@ -502,6 +502,18 @@ h2 {
   z-index: 2;
 }
 
+#guide-path {
+  animation: breathe 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px rgba(16, 185, 129, 0.8));
+  stroke: #10b981; /* Success green to guide user */
+}
+
+@keyframes breathe {
+  0% { opacity: 0.4; stroke-width: 1.5; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
+  50% { opacity: 1; stroke-width: 2.5; filter: drop-shadow(0 0 8px rgba(16, 185, 129, 1)); }
+  100% { opacity: 0.4; stroke-width: 1.5; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
+}
+
 #btn-switch-camera {
   position: absolute;
   top: 12px;
