@@ -36,41 +36,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const resAlignment = document.querySelector('#result-alignment .status-badge');
   const overallFeedback = document.getElementById('overall-feedback');
 
-  // Camera stream track
-  let currentStream = null;
-  let useFrontCamera = true; // Default to front camera
+  // Modal logic
+  const modalLinks = document.querySelectorAll('.btn-text-link[data-modal]');
+  const closeButtons = document.querySelectorAll('.modal-close');
+  const overlays = document.querySelectorAll('.modal-overlay');
 
-  // User data store
-  let userData = {};
+  modalLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetId = e.target.getAttribute('data-modal');
+      const targetModal = document.getElementById(targetId);
+      if (targetModal) {
+        targetModal.classList.add('active');
+      }
+    });
+  });
 
-  // Capture Process State
-  let currentStep = 1;
-  const capturedImages = {
-    step1: null, // Front
-    step2: null, // Upper
-    step3: null  // Lower
-  };
+  closeButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.target.closest('.modal-overlay').classList.remove('active');
+    });
+  });
 
-  const stepConfig = {
-    1: {
-      title: "정면 사진 촬영",
-      desc: "어금니를 가볍게 물고 입술을 벌려 치아 정면이 잘 보이게 찍어주세요.",
-      btnText: "정면 사진 찍기",
-      guidePath: "M 10,50 Q 50,10 90,50 Q 50,90 10,50 Z" // Smile shape
-    },
-    2: {
-      title: "상악(위쪽) 아치 촬영",
-      desc: "입을 크게 벌리고 고개를 뒤로 젖혀 위쪽 치아 전체가 보이게 찍어주세요.",
-      btnText: "위쪽 치아 찍기",
-      guidePath: "M 20,80 Q 50,10 80,80" // U-shape opening downwards
-    },
-    3: {
-      title: "하악(아래쪽) 아치 촬영",
-      desc: "입을 크게 벌리고 고개를 숙여 아래쪽 치아 전체가 보이게 찍어주세요.",
-      btnText: "아래쪽 치아 찍기",
-      guidePath: "M 20,20 Q 50,90 80,20" // U-shape opening upwards
-    }
-  };
+  overlays.forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        overlay.classList.remove('active');
+      }
+    });
+  });
 
   // Dev skip logic
   const btnDevSkip = document.getElementById('btn-dev-skip');
